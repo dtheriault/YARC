@@ -2,7 +2,7 @@
 
 This repository is Public and contains files supporting talks given by NO1D at various YARC meetings.
 
-IDtimer - Very basic Ham Identification Timer circuit 
+##IDtimer -- Ham Identification Timer circuit 
 
   Project was presented during an April 2016 talk on PCB Prototyping.  The ID Circuit was used
   as an example of thru-hole and SMD PCB which was produced for club members using the Toner Transfer 
