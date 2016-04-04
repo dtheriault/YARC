@@ -19,7 +19,7 @@
  	along with IDtimer.ino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <EEPROM.h>
+#include <EEPROM.h> 
 
 //
 // ATtiny85 Pin Definitions.  Modify these for use software on another
@@ -43,8 +43,7 @@
 //
 // Main polling loop is 100ms intervals requiring timeout in ms.
 // Timeout = (#seconds * 10)  ex: 10 minute == 6000ms
-// Values were adjusted after manual measurements of each timer for accuracy.
-// Measured using ATtiny85 with internal 8Mhz clocking.
+// Measured on ATtiny85 with internal 8Mhz clocking.
 //
 #define TIMEOUT_15M 9000
 #define TIMEOUT_10M 6000
@@ -52,7 +51,9 @@
 #define TIMEOUT_3M  1800
 #define TIMEOUT_2M  1200
 
-// OSCCAL Calibration Value, see Calibrate85.ino                                                              
+//
+// OSCCAL Calibration Value, see Calibrate85.ino and IDTimer.pdf document for details
+//
 #define CALIBRATION 95
 
 //
@@ -86,7 +87,8 @@ int fsm_state = STATE_IDLE;
 // Description:
 //
 // Called once after chip powers up.  Used to setup the
-// various pins of the ATtiny85.
+// various pins of the ATtiny85 and set OSCCAL register for accurate
+// frequency of internal clock.
 //
 void setup()
 {
@@ -184,12 +186,13 @@ int readTSEL() {
 //
 void checkTimeout() {
 
+  //
   // Here we check for timeouts based on the configuration from TSEL switch
   // This actually could be performed inside the Timing state only (NOTE: move???)
   //
-
   // Now check to see if timeout has expired based on the user
   // configured setting TSEL_Val.
+  //
   switch (TSEL_Value) {
 
     case TSEL_15M:
@@ -222,7 +225,7 @@ void checkTimeout() {
       }
       break;
 
-    default:      // Not clear on value
+    default:      // Not clear on value, sound alarm (Check voltage divider)
       fsm_state = STATE_ERROR;
   }
 }
@@ -237,7 +240,6 @@ void checkTimeout() {
 //
 void loop()
 {
-
   //
   // Basic state machine.  IDLE is such, Timing means we're counting how long PTT
   // has been active.  If Timer expires, enter Alarm state where we sound the ID
