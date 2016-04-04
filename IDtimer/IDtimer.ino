@@ -19,6 +19,8 @@
  	along with IDtimer.ino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <EEPROM.h>
+
 //
 // ATtiny85 Pin Definitions.  Modify these for use software on another
 // Arduino chip.
@@ -44,10 +46,14 @@
 // Values were adjusted after manual measurements of each timer for accuracy.
 // Measured using ATtiny85 with internal 8Mhz clocking.
 //
-#define TIMEOUT_10M 6097
-#define TIMEOUT_5M  3048
-#define TIMEOUT_3M  1825
-#define TIMEOUT_2M  1217
+#define TIMEOUT_15M 9000
+#define TIMEOUT_10M 6000
+#define TIMEOUT_5M  3000
+#define TIMEOUT_3M  1800
+#define TIMEOUT_2M  1200
+
+// OSCCAL Calibration Value, see Calibrate85.ino                                                              
+#define CALIBRATION 95
 
 //
 // This is the Alarm buzzer loop counter.  Adjust for different tone
@@ -92,6 +98,9 @@ void setup()
   pinMode(PTT, INPUT_PULLUP);
   pinMode(TSEL, INPUT);
   pinMode(ALARM, OUTPUT);
+
+  // Set the Internal OSC calibration value 
+  OSCCAL = CALIBRATION;
 
   // default analog vref of 5v.
   analogReference(DEFAULT);
@@ -182,6 +191,12 @@ void checkTimeout() {
   // Now check to see if timeout has expired based on the user
   // configured setting TSEL_Val.
   switch (TSEL_Value) {
+
+    case TSEL_15M:
+      if (timeout >= TIMEOUT_15M) {
+        fsm_state = STATE_ALARM;
+      }
+      break;
 
     case TSEL_10M:
       if (timeout >= TIMEOUT_10M) {
